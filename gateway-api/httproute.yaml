@@ -1,0 +1,11 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: saas-route
+spec:
+  parentRefs:
+    - name: saas-gateway
+  rules:
+    - backendRefs:
+        - name: gateway-service
+          port: 3000

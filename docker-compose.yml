@@ -1,0 +1,28 @@
+services:
+  auth:
+    build: ./services/auth
+    container_name: auth-service
+    ports:
+      - "3001:3001"
+
+  tenant:
+    build: ./services/tenant
+    container_name: tenant-service
+    ports:
+      - "3002:3002"
+
+  task:
+    build: ./services/task
+    container_name: task-service
+    ports:
+      - "3003:3003"
+
+  gateway:
+    build: ./gateway
+    container_name: gateway-service
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth
+      - tenant
+      - task
