@@ -29,7 +29,7 @@ The platform is built using a microservices architecture deployed on AWS EKS.
 - PostgreSQL provides persistent storage  
 - AWS LoadBalancer exposes the application  
 
-![Architecture](images/1.%20Eks-Microservices-Architecture.png)
+![Architecture](images/eks-microservices-architecture.png)
 
 ---
 
@@ -150,7 +150,7 @@ Pipeline flow:
 6. Deploy Kubernetes manifests  
 7. Restart deployments  
 
-![CI/CD Pipeline](images/3.%20ci-cd-pipeline.png)
+![CI/CD Pipeline](images/ci-cd-pipeline.png)
 
 ---
 
@@ -188,7 +188,7 @@ Result:
 - All services running successfully  
 - Database connected and working  
 
-![System Verification](images/2.%20system-verification.png)
+![System Verification](images/system-verification.png)
 
 ---
 
@@ -291,3 +291,19 @@ This project demonstrates:
 - troubleshooting real-world issues  
 
 It reflects practical DevOps skills across infrastructure, deployment, and automation.
+
+---
+
+## 👨‍💻 About Me
+
+**Donatus Emeka Anyalebechi**
+Junior DevOps Engineer
+
+📍 Germany
+📧 [donaemeka92@gmail.com](mailto:donaemeka92@gmail.com)
+🔗 https://www.linkedin.com/in/donatus-devops
+🐙 https://github.com/donaemeka
+
+---
+
+⭐ Built to demonstrate real-world DevOps capabilities
