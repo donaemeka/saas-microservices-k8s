@@ -1,0 +1,92 @@
+name: Build, Push, and Deploy to EKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push auth-service
+        uses: docker/build-push-action@v6
+        with:
+          context: ./services/auth
+          push: true
+          tags: donaemeka/auth-service:latest
+
+      - name: Build and push tenant-service
+        uses: docker/build-push-action@v6
+        with:
+          context: ./services/tenant
+          push: true
+          tags: donaemeka/tenant-service:latest
+
+      - name: Build and push task-service
+        uses: docker/build-push-action@v6
+        with:
+          context: ./services/task
+          push: true
+          tags: donaemeka/task-service:latest
+
+      - name: Build and push gateway-service
+        uses: docker/build-push-action@v6
+        with:
+          context: ./gateway
+          push: true
+          tags: donaemeka/gateway-service:latest
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region eu-west-2 --name saas-microservices
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/auth/auth-deployment.yaml
+          kubectl apply -f k8s/auth/auth-service.yaml
+
+          kubectl apply -f k8s/tenant/tenant-deployment.yaml
+          kubectl apply -f k8s/tenant/tenant-service.yaml
+
+          kubectl apply -f k8s/database/postgres-secret.yaml
+          kubectl apply -f k8s/database/postgres-pvc.yaml
+          kubectl apply -f k8s/database/postgres.yaml
+          kubectl apply -f k8s/database/postgres-service.yaml
+
+          kubectl apply -f k8s/task/task-deployment.yaml
+          kubectl apply -f k8s/task/task-service.yaml
+
+          kubectl apply -f k8s/gateway/gateway-deployment.yaml
+          kubectl apply -f k8s/gateway/gateway-service.yaml
+
+      - name: Restart deployments
+        run: |
+          kubectl rollout restart deployment tenant-deployment
+          kubectl rollout restart deployment task-deployment
+          kubectl rollout restart deployment gateway-deployment
+
+      - name: Verify rollout
+        run: |
+          kubectl rollout status deployment/tenant-deployment --timeout=180s
+          kubectl rollout status deployment/task-deployment --timeout=180s
+          kubectl rollout status deployment/gateway-deployment --timeout=180s
