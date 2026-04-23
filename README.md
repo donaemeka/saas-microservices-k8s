@@ -167,4 +167,4 @@ DevOps & Cloud Engineer
 
 ---
 
-⭐ Built to demonstrate real-world DevOps capabilities
+⭐ Built to demonstrate real-world DevOps capabilities.
